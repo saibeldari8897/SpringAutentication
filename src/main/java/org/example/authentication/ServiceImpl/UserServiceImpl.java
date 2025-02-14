@@ -54,7 +54,6 @@ public class UserServiceImpl implements UserService {
                     .collect(Collectors.joining(", "));
             throw new RuntimeException("Validation failed: " + errorMessage);
         }
-
         userRepository.save(user);
         return "User created Successfully";
     }

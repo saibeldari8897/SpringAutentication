@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
@@ -26,20 +28,27 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody @Valid SignUpRequestDto signUpRequestDto,BindingResult bindingResult) {
+    public ResponseEntity<Map<String, String>> register(
+            @RequestBody @Valid SignUpRequestDto signUpRequestDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             bindingResult.getAllErrors().forEach(error -> {
                 System.out.println("Error: " + error.getDefaultMessage());
             });
-            return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", bindingResult.getFieldError().getDefaultMessage());
+            return ResponseEntity.badRequest().body(errorResponse); // Return error as JSON
         }
 
         try {
             String response = userService.registerUser(signUpRequestDto);
-            return ResponseEntity.ok(response);
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", response); // wrap response in JSON
+            return ResponseEntity.ok(successResponse); // Return success as JSON
         } catch (EmailAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse); // Return error as JSON
         }
     }
 
