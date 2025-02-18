@@ -3,17 +3,19 @@ package org.example.authentication.ServiceImpl;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import org.example.authentication.Dtos.SignInRequestDto;
 import org.example.authentication.Dtos.SignUpRequestDto;
 import org.example.authentication.Exceptions.EmailAlreadyExistsException;
 import org.example.authentication.Models.User;
 import org.example.authentication.Repository.UserRepository;
 import org.example.authentication.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,6 +28,9 @@ public class UserServiceImpl implements UserService {
     private Validator validator;
 
     private PasswordEncoder passwordEncoder;
+    @Qualifier("userService")
+    @Autowired
+    private UserService userService;
 
     public UserServiceImpl(UserRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -61,5 +66,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public boolean signInUser(SignInRequestDto signInRequestDto) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByEmail(signInRequestDto.getEmail()));
+        if (user.isPresent()) {
+            return true;
+        }
+        return false;
     }
 }

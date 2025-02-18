@@ -2,6 +2,7 @@ package org.example.authentication.Controller;
 
 
 import jakarta.validation.Valid;
+import org.example.authentication.Dtos.SignInRequestDto;
 import org.example.authentication.Dtos.SignUpRequestDto;
 import org.example.authentication.Exceptions.EmailAlreadyExistsException;
 import org.example.authentication.Models.User;
@@ -57,5 +58,13 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+
+    @PostMapping("/signIn")
+    public String signIn(@RequestBody @Valid SignInRequestDto signInRequestDto) {
+        if(userService.signInUser(signInRequestDto)){
+            return "success";
+        }
+        return "fail";
+    }
 
 }
