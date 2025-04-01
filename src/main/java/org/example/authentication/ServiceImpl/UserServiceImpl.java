@@ -76,4 +76,13 @@ public class UserServiceImpl implements UserService {
         }
         return false;
     }
+
+    @Override
+    public User getUserByName(String name){
+        User user = userRepository.getUserByName(String name);
+        if(user.isPresent()){
+            return user;
+        }
+        return null;
+    }
 }

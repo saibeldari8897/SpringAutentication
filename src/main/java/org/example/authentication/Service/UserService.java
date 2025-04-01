@@ -17,4 +17,6 @@ public interface UserService {
     List<User> getAllUsers();
 
     public boolean signInUser(SignInRequestDto signInRequestDto);
+
+    public User getUserByName(String name);
 }
